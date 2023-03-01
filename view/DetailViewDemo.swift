@@ -6,13 +6,13 @@
 //
 
 import SwiftUI
-import PhotosUI
+import PhotosUI // thank you Apple !
 
 struct DetailViewDemo: View {
     @State private var selectedItem: PhotosPickerItem? = nil
     @State private var picture: UIImage? // main GUI thread, works fine
     @Binding var message:String
-    @Binding var note:Note
+    @Binding var note:Note  // new
     var body: some View {
         NavigationStack{
             VStack{
@@ -30,12 +30,9 @@ struct DetailViewDemo: View {
                 }
                 TextField("", text: $message, axis: .vertical)
                 
-                VStack{
                     Image(uiImage: picture ?? UIImage(systemName: "photo.circle.fill")!)
                         .resizable()
                         .frame(width: 250, height: 250)
-                }
-                
             }
         }.toolbar{
             ToolbarItem(placement: .navigationBarTrailing) {
@@ -45,8 +42,9 @@ struct DetailViewDemo: View {
             }
         }
         .onChange(of: selectedItem) { item in
-            Task(priority: .background) {
+            Task(priority: .background) {  // why background: It takes time to load
                 print("image ready")
+                // data
                 if let data = try? await item?.loadTransferable(type: Data.self){
                     note.image = UIImage(data: data)
                     picture = note.image
@@ -57,7 +55,7 @@ struct DetailViewDemo: View {
             print("onAppear ")
             if note.hasImage {
                 fService.downloadImage(note: note){ imageFromFB in
-                    picture = imageFromFB
+                    picture = imageFromFB  // will be executed in FirebaseService class
                 }
             }
         }

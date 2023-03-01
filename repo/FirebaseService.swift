@@ -58,6 +58,7 @@ class FirebaseService: ObservableObject{
     
     func uploadImage(note:Note){
         if let img = note.image{
+                deleteImage(note: note) // delete first the old image.
                 let data = img.jpegData(compressionQuality: 1.0)!
                 let imageRef = storage.reference().child(note.id)
                 let metaData = StorageMetadata()
@@ -72,7 +73,7 @@ class FirebaseService: ObservableObject{
             }
     }
     
-    func downloadImage(note:Note, completion: @escaping (UIImage?) -> Void){
+    func downloadImage(note:Note, completion: @escaping (UIImage?) -> Void) {
         print("downloadImage()")
         let imageRef = storage.reference(withPath: note.id)
         imageRef.getData(maxSize: 7000000) { data, error in
